@@ -2,16 +2,25 @@ package me.Tyler.Game;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.util.Random;
 
 public class Main extends Canvas implements Runnable {
 
-    public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 20;
+    public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 9;
 
     private Thread thread;
     private boolean running = false;
 
+    private Handler handler;
+
     public Main() {
-        new Window(WIDTH, HEIGHT, "Making a game!", this);
+        handler = new Handler();
+        this.addKeyListener(new KeyInput(handler));
+
+        new Window(HEIGHT, WIDTH, "Making a game!", this);
+
+        handler.addObject(new Player(WIDTH/2-32, HEIGHT/2-32, ID.Player));
+        handler.addObject(new Player(WIDTH/2+64, HEIGHT/2-32, ID.Player2));
     }
 
     public synchronized void start() {
@@ -51,7 +60,7 @@ public class Main extends Canvas implements Runnable {
 
             if(System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
-                System.out.println("FPS: " + frames);
+                //System.out.println("FPS: " + frames);
                 frames = 0;
             }
         }
@@ -59,7 +68,7 @@ public class Main extends Canvas implements Runnable {
     }
 
     private void tick() {
-
+        handler.tick();
     }
 
     private void render() {
@@ -71,7 +80,9 @@ public class Main extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
 
         g.setColor(Color.BLACK);
-        g.fillRect(0, 0, HEIGHT, WIDTH);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        handler.render(g);
 
         g.dispose();
         bs.show();
